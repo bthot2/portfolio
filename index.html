@@ -92,58 +92,128 @@
             cursor: pointer;
         }
         
-        /* Dark mode is default, this is for light mode */
-        .light-mode {
-            background-color: #f1f5f9;
-            color: #1e293b;
-        }
-        
-        .light-mode .terminal {
-            background-color: #e2e8f0;
-        }
-        
-        .light-mode .terminal-header {
-            background-color: #cbd5e1;
-        }
-        
-        .publication-card {
-            transition: transform 0.3s ease;
-        }
-        
-        .publication-card:hover {
-            transform: translateY(-3px);
-        }
-        
-        .award-item {
+        /* Profile Picture Animation Styles */
+        .profile-container {
             position: relative;
-            padding-left: 20px;
+            width: 340px;
+            height: 340px;
         }
         
-        .award-item::before {
-            content: '';
+        .profile-terminal {
             position: absolute;
-            left: 0;
-            top: 10px;
-            width: 8px;
-            height: 8px;
+            width: 100%;
+            height: 100%;
+            background-color: #1e293b;
             border-radius: 50%;
+            overflow: hidden;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        .profile-terminal.fade-out {
+            opacity: 0;
+            z-index: 0;
+        }
+        
+        .profile-terminal-content {
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: #10b981;
+            overflow: hidden;
+        }
+        
+        .profile-command {
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .profile-response {
+            color: #94a3b8;
+            margin-bottom: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .profile-image {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(to bottom right, #10b981, #3b82f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 1s ease;
+            z-index: 5;
+        }
+        
+        .profile-image.fade-in {
+            opacity: 1;
+        }
+        
+        .profile-image svg {
+            width: 65%;
+            height: 65%;
+            color: #0f172a;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .profile-image.fade-in svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .profile-badge {
+            position: absolute;
+            bottom: -15px;
+            right: -15px;
+            z-index: 20;
+            opacity: 0;
+            transform: scale(0);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .profile-badge.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .loading-bar-container {
+            width: 80%;
+            height: 8px;
+            background-color: #334155;
+            border-radius: 4px;
+            margin: 10px auto;
+            overflow: hidden;
+        }
+        
+        .loading-bar {
+            height: 100%;
+            width: 0%;
             background-color: #10b981;
+            border-radius: 4px;
+            transition: width 0.5s ease;
         }
         
-        .citation-count {
-            transition: all 0.3s ease;
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 100%; }
         }
         
-        .publication-card:hover .citation-count {
-            transform: scale(1.1);
-        }
-        
-        .canva-credit {
-            transition: all 0.3s ease;
-        }
-        
-        .canva-credit:hover {
-            transform: translateY(-2px);
+        .type-animation {
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typewriter 1.5s steps(40, end);
         }
     </style>
 </head>
@@ -220,18 +290,48 @@
                 </div>
                 
                 <div class="md:w-1/2 flex justify-center md:justify-end">
-                    <div class="relative">
-                        <div class="w-64 h-64 md:w-80 md:h-80 rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center">
-                            <svg class="w-48 h-48 md:w-64 md:h-64 text-slate-800" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
-                            </svg>
+                    <div class="profile-container">
+                        <!-- Terminal Animation Layer -->
+                        <div class="profile-terminal" id="profile-terminal">
+                            <div class="profile-terminal-content">
+                                <div class="profile-command" id="command-1">$ ssh server.bkt.man</div>
+                                <div class="profile-response" id="response-1">Connected to server.bkt.man</div>
+                                
+                                <div class="profile-command" id="command-2">$ cd /var/www/portfolio/images</div>
+                                <div class="profile-response" id="response-2">Changed directory</div>
+                                
+                                <div class="profile-command" id="command-3">$ ls -la profile*</div>
+                                <div class="profile-response" id="response-3">-rw-r--r-- 1 user www-data 2.4M Jan 15 2023 profile.jpg</div>
+                                
+                                <div class="profile-command" id="command-4">$ wget https://cdn.example.com/profile.jpg</div>
+                                <div class="profile-response" id="response-4">Downloading profile image...</div>
+                                
+                                <div class="loading-bar-container">
+                                    <div class="loading-bar" id="loading-bar"></div>
+                                </div>
+                                
+                                <div class="profile-command" id="command-5">$ convert profile.jpg -resize 500x500 profile.png</div>
+                                <div class="profile-response" id="response-5">Image converted and optimized</div>
+                                
+                                <div class="profile-command" id="command-6">$ display profile.png</div>
+                                <div class="profile-response" id="response-6">Loading image...</div>
+                            </div>
                         </div>
-                        <div class="absolute -bottom-4 -right-4 bg-slate-800 p-3 rounded-full border-4 border-slate-700">
-                            <svg class="w-8 h-8 text-emerald-400" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9.4 16.6L4.8 12L9.4 7.4L8 6L2 12L8 18L9.4 16.6ZM14.6 16.6L19.2 12L14.6 7.4L16 6L22 12L16 18L14.6 16.6Z"/>
-                            </svg>
+                        
+                        <!-- Profile Image Layer -->
+                        <div class="profile-image" id="profile-image">
+                            <img class="rounded-full" src="bkt.jpeg">
                         </div>
-                    </div>
+                        
+                        
+                        <div class="profile-badge" id="profile-badge">
+                            <div class="bg-slate-800 p-3 rounded-full border-4 border-slate-700">
+                                <svg class="w-8 h-8 text-emerald-400" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9.4 16.6L4.8 12L9.4 7.4L8 6L2 12L8 18L9.4 16.6ZM14.6 16.6L19.2 12L14.6 7.4L16 6L22 12L16 18L14.6 16.6Z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>                    
                 </div>
             </div>
         </div>
@@ -924,11 +1024,99 @@
                 }
             }
         }
+
+        
+        // Profile picture animation
+        function animateProfilePicture() {
+            const terminal = document.getElementById('profile-terminal');
+            const profileImage = document.getElementById('profile-image');
+            const profileBadge = document.getElementById('profile-badge');
+            const loadingBar = document.getElementById('loading-bar');
+            
+            // Animate commands appearing one by one
+            const commands = [
+                { cmd: 'command-1', resp: 'response-1', delay: 500 },
+                { cmd: 'command-2', resp: 'response-2', delay: 1000 },
+                { cmd: 'command-3', resp: 'response-3', delay: 1500 },
+                { cmd: 'command-4', resp: 'response-4', delay: 2000 },
+            ];
+            
+            commands.forEach((item, index) => {
+                const cmdElement = document.getElementById(item.cmd);
+                const respElement = document.getElementById(item.resp);
+                
+                cmdElement.style.width = '0';
+                respElement.style.width = '0';
+                
+                setTimeout(() => {
+                    cmdElement.classList.add('type-animation');
+                    
+                    setTimeout(() => {
+                        respElement.classList.add('type-animation');
+                    }, 500);
+                    
+                }, item.delay);
+            });
+
+                                // Start loading bar animation
+            setTimeout(() => {
+                let width = 0;
+                const loadingInterval = setInterval(() => {
+                    if (width >= 100) {
+                        clearInterval(loadingInterval);
+                        
+                        // Show the last command and response
+                        setTimeout(() => {
+                            const cmd5 = document.getElementById('command-5');
+                            const resp5 = document.getElementById('response-5');
+                            const cmd6 = document.getElementById('command-6');
+                            const resp6 = document.getElementById('response-6');
+                            
+                            cmd5.classList.add('type-animation');
+                            
+                            setTimeout(() => {
+                                resp5.classList.add('type-animation');
+                                
+                                setTimeout(() => {
+                                    cmd6.classList.add('type-animation');
+                                    
+                                    setTimeout(() => {
+                                        resp6.classList.add('type-animation');
+                                        
+                                        // Fade out terminal and show profile image
+                                        setTimeout(() => {
+                                            terminal.classList.add('fade-out');
+                                            profileImage.classList.add('fade-in');
+                                            
+                                            // Show badge after profile image appears
+                                            setTimeout(() => {
+                                                profileBadge.classList.add('show');
+                                            }, 500);
+                                            
+                                        }, 1000);
+                                        
+                                    }, 500);
+                                    
+                                }, 1000);
+                                
+                            }, 500);
+                            
+                        }, 500);
+                        
+                    } else {
+                        width += 2;
+                        loadingBar.style.width = width + '%';
+                    }
+                }, 50);
+                
+            }, 3000);
+        }
         
         // Start typing animations
         window.addEventListener('DOMContentLoaded', () => {
             typeLogo();
             setTimeout(typeTerminal, 1000);
+            setTimeout(animateProfilePicture, 500);
             
             // Mobile menu toggle
             const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -937,67 +1125,9 @@
             mobileMenuButton.addEventListener('click', () => {
                 mobileMenu.classList.toggle('hidden');
             });
-            
-            // Theme toggle
-            const themeToggle = document.getElementById('theme-toggle');
-            const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+
             const body = document.body;
-            
-            function toggleTheme() {
-                body.classList.toggle('light-mode');
-                
-                const isDarkMode = !body.classList.contains('light-mode');
-                const themeIcon = isDarkMode ? 
-                    '<i class="fas fa-moon text-yellow-300"></i>' : 
-                    '<i class="fas fa-sun text-yellow-500"></i>';
-                
-                themeToggle.innerHTML = themeIcon;
-                mobileThemeToggle.innerHTML = `${themeIcon} Toggle Theme`;
-            }
-            
-            themeToggle.addEventListener('click', toggleTheme);
-            mobileThemeToggle.addEventListener('click', toggleTheme);
-            
-            // Smooth scrolling for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    const targetId = this.getAttribute('href');
-                    const targetElement = document.querySelector(targetId);
-                    
-                    if (targetElement) {
-                        window.scrollTo({
-                            top: targetElement.offsetTop - 80,
-                            behavior: 'smooth'
-                        });
-                        
-                        // Close mobile menu if open
-                        mobileMenu.classList.add('hidden');
-                    }
-                });
-            });
-            
-            // Contact form submission
-            const contactForm = document.getElementById('contact-form');
-            
-            contactForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const name = document.getElementById('name').value;
-                const email = document.getElementById('email').value;
-                const subject = document.getElementById('subject').value;
-                const message = document.getElementById('message').value;
-                
-                // In a real implementation, you would send this data to a server
-                console.log('Form submitted:', { name, email, subject, message });
-                
-                // Show success message (in a real implementation)
-                alert('Thank you for your message! I will get back to you soon.');
-                
-                // Reset form
-                contactForm.reset();
-            });
+        
             
             // Update active nav link on scroll
             const sections = document.querySelectorAll('section[id]');
