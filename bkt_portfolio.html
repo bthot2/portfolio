@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhoIs BKT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+        
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+        
+        .terminal {
+            background-color: #1e293b;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .terminal-header {
+            background-color: #334155;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+        }
+        
+        .dot {
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .typing-animation::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+        }
+        
+        @keyframes blink {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        .project-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .skill-pill {
+            transition: transform 0.2s ease;
+        }
+        
+        .skill-pill:hover {
+            transform: scale(1.05);
+        }
+        
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: #10b981;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .active::after {
+            width: 100%;
+        }
+        
+        .theme-toggle {
+            cursor: pointer;
+        }
+        
+        /* Dark mode is default, this is for light mode */
+        .light-mode {
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+        
+        .light-mode .terminal {
+            background-color: #e2e8f0;
+        }
+        
+        .light-mode .terminal-header {
+            background-color: #cbd5e1;
+        }
+        
+        .publication-card {
+            transition: transform 0.3s ease;
+        }
+        
+        .publication-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .award-item {
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .award-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #10b981;
+        }
+        
+        .citation-count {
+            transition: all 0.3s ease;
+        }
+        
+        .publication-card:hover .citation-count {
+            transform: scale(1.1);
+        }
+        
+        .canva-credit {
+            transition: all 0.3s ease;
+        }
+        
+        .canva-credit:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-slate-800 bg-opacity-90 backdrop-blur-sm py-4 px-6 md:px-12">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="text-emerald-400 code-font font-bold text-xl md:text-2xl">
+                    <span class="typing-animation" id="logo-text"></span>
+                </div>
+            </div>
+            
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="#about" class="nav-link active text-gray-200 hover:text-white">About</a>
+                <a href="#experience" class="nav-link text-gray-200 hover:text-white">Experience</a>
+                <a href="#publications" class="nav-link text-gray-200 hover:text-white">Publications</a>
+                <a href="#projects" class="nav-link text-gray-200 hover:text-white">Projects</a>
+                <a href="#awards" class="nav-link text-gray-200 hover:text-white">Awards</a>
+                <a href="#skills" class="nav-link text-gray-200 hover:text-white">Skills</a>
+                <a href="#contact" class="nav-link text-gray-200 hover:text-white">Contact</a>
+            </div>
+            
+            <div class="md:hidden flex items-center">
+                <button id="mobile-menu-button" class="text-gray-200 hover:text-white">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden mt-4 py-2 bg-slate-700 rounded-lg">
+            <div class="flex flex-col space-y-3 px-4 py-2">
+                <a href="#about" class="text-gray-200 hover:text-white py-1">About</a>
+                <a href="#experience" class="text-gray-200 hover:text-white py-1">Experience</a>
+                <a href="#publications" class="text-gray-200 hover:text-white py-1">Publications</a>
+                <a href="#projects" class="text-gray-200 hover:text-white py-1">Projects</a>
+                <a href="#awards" class="text-gray-200 hover:text-white py-1">Awards</a>
+                <a href="#skills" class="text-gray-200 hover:text-white py-1">Skills</a>
+                <a href="#contact" class="text-gray-200 hover:text-white py-1">Contact</a>
+                <div class="theme-toggle py-1" id="mobile-theme-toggle">
+                    <i class="fas fa-moon text-yellow-300"></i> Toggle Theme
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="py-16 md:py-24 px-6 md:px-12">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="md:w-1/2 mb-10 md:mb-0">
+                    <div class="terminal w-full max-w-lg">
+                        <div class="terminal-header px-4 py-2 flex items-center">
+                            <div class="flex space-x-2">
+                                <span class="dot bg-red-500"></span>
+                                <span class="dot bg-yellow-500"></span>
+                                <span class="dot bg-green-500"></span>
+                            </div>
+                            <div class="ml-4 text-sm text-gray-300 code-font">
+                                ~/portfolio/intro.sh
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="code-font text-sm md:text-base">
+                                <p class="text-emerald-400">$ whoami</p>
+                                <p class="text-gray-300 mt-1">Bhargav Krishna Thota</p>
+                                <p class="text-emerald-400 mt-4">$ cat about.txt</p>
+                                <p class="text-gray-300 mt-1">Software Developer with a PhD in Computer Science</p>
+                                <p class="text-gray-300">3+ years industry experience in software development</p>
+                                <p class="text-emerald-400 mt-4">$ ls skills/</p>
+                                <p class="text-blue-400 mt-1">Research Teaching Java Python Javascript Machine-Learning</p>
+                                <p class="text-emerald-400 mt-4">$ <span id="terminal-cursor" class="typing-animation"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/2 flex justify-center md:justify-end">
+                    <div class="relative">
+                        <div class="w-64 h-64 md:w-80 md:h-80 rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center">
+                            <svg class="w-48 h-48 md:w-64 md:h-64 text-slate-800" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
+                            </svg>
+                        </div>
+                        <div class="absolute -bottom-4 -right-4 bg-slate-800 p-3 rounded-full border-4 border-slate-700">
+                            <svg class="w-8 h-8 text-emerald-400" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9.4 16.6L4.8 12L9.4 7.4L8 6L2 12L8 18L9.4 16.6ZM14.6 16.6L19.2 12L14.6 7.4L16 6L22 12L16 18L14.6 16.6Z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 px-6 md:px-12 bg-slate-900">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-8 flex items-center">
+                <span class="text-emerald-400 mr-2">#</span> About Me
+                <div class="h-px bg-emerald-400 flex-grow ml-4"></div>
+            </h2>
+            
+            <div class="flex flex-col md:flex-row gap-10">
+                <div class="md:w-2/3">
+                    <p class="text-lg mb-6">
+                        Hello! I'm Bhargav Krishna Thota, a software developer with a PhD in Computer Science specializing in 
+                        cyber argumentation with social networking. My academic background combined with three years of 
+                        industry experience gives me a unique perspective on solving complex technical challenges.
+                    </p>
+                    <p class="text-lg mb-6">
+                        My research focused on assesing the impact of social networks on discussions and debates in cyber argumentation platforms,
+                        which I've successfully applied to real-world problems in my professional career.
+                    </p>
+                    <p class="text-lg">
+                        When I'm not coding, you can find me mentoring students, exploring the latest advancements in technology, voluteering for community. I'm passionate about creating elegant solutions that are both technically sound and user-friendly.
+                    </p>
+                    
+                    <div class="mt-8 flex flex-wrap gap-4">
+                        <a href="#contact" class="bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-6 rounded-md transition duration-300 flex items-center">
+                            <i class="fas fa-envelope mr-2"></i> Get in Touch
+                        </a>
+                        <a href="#" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded-md transition duration-300 flex items-center">
+                            <i class="fas fa-file-alt mr-2"></i> Download CV
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/3">
+                    <div class="bg-slate-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4 text-emerald-400">Education</h3>
+                        <div class="mb-4">
+                            <div class="font-semibold">PhD in Computer Science</div>
+                            <div class="text-gray-400">Southern Illinois University, Carbondale</div>
+                            <div class="text-sm text-gray-500">2020 - 2025</div>
+                        </div>
+                        <div>
+                            <div class="font-semibold">MS in Computer Science</div>
+                            <div class="text-gray-400">University of Illinois, Springfield</div>
+                            <div class="text-sm text-gray-500">2016 - 2017</div>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold mb-4 mt-8 text-emerald-400">Interests</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-slate-700 px-3 py-1 rounded-full text-sm">Software Development</span>
+                            <span class="bg-slate-700 px-3 py-1 rounded-full text-sm">Algorithm Design</span>
+                            <span class="bg-slate-700 px-3 py-1 rounded-full text-sm">Cyber-Argumentation</span>
+                            <span class="bg-slate-700 px-3 py-1 rounded-full text-sm">Social Network Analysis</span>
+                            <span class="bg-slate-700 px-3 py-1 rounded-full text-sm">Argumentation Mining</span>
+                            <span class="bg-slate-700 px-3 py-1 rounded-full text-sm">Opinion Mining</span>
+                            <span class="bg-slate-700 px-3 py-1 rounded-full text-sm">Opinion Evolution</span>
+                            <span class="bg-slate-700 px-3 py-1 rounded-full text-sm">Opinion Modelling</span>
+                            <span class="bg-slate-700 px-3 py-1 rounded-full text-sm">Open Source</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+  <section id="experience" class="py-16 px-6 md:px-12">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-8 flex items-center">
+                <span class="text-emerald-400 mr-2">#</span> Experience
+                <div class="h-px bg-emerald-400 flex-grow ml-4"></div>
+            </h2>
+            
+            <div class="space-y-12">
+                <!-- Experience 1 -->
+                <div class="bg-slate-800 rounded-lg p-6 md:p-8 transition-all hover:shadow-lg hover:shadow-emerald-900/20">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                        <h3 class="text-xl md:text-2xl font-bold text-emerald-400">Research Assistant</h3>
+                        <div class="mt-2 md:mt-0 px-4 py-1 bg-slate-700 rounded-full text-sm">2020 - 2025</div>
+                    </div>
+                    <div class="text-lg text-gray-300 mb-4">Southern Illinois University, Carbondale</div>
+                    <p class="text-gray-400 mb-6">
+                        Assesing the impact of social networks on discussions and debates in cyber argumentation platforms.
+                        Developed a novel models for quantifying the impact of social netowrks on collective opinion and outlier opinions in a discussion.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full text-sm">Qualitative & Quantitative Research</span>
+                        <span class="bg-red-900/50 text-red-300 px-3 py-1 rounded-full text-sm">Algorithm Development</span>
+                        <span class="bg-red-900/50 text-red-300 px-3 py-1 rounded-full text-sm">Experimental Design</span>
+                        <span class="bg-yellow-900/50 text-yellow-300 px-3 py-1 rounded-full text-sm">Sensitivity Analysis</span>
+                        <span class="bg-yellow-900/50 text-yellow-300 px-3 py-1 rounded-full text-sm">Literature Review</span>
+                        <span class="bg-yellow-900/50 text-yellow-300 px-3 py-1 rounded-full text-sm">Academic Writing</span>
+                        <span class="bg-green-900/50 text-green-300 px-3 py-1 rounded-full text-sm">Latex/Overleaaf</span>
+                        <span class="bg-green-900/50 text-green-300 px-3 py-1 rounded-full text-sm">Excel, Powerpoint and Word</span>
+                        <span class="bg-green-900/50 text-green-300 px-3 py-1 rounded-full text-sm">Java</span>
+                        <span class="bg-green-900/50 text-green-300 px-3 py-1 rounded-full text-sm">Python</span>
+                        <span class="bg-green-900/50 text-green-300 px-3 py-1 rounded-full text-sm">Neo4j</span>
+                        <span class="bg-green-900/50 text-green-300 px-3 py-1 rounded-full text-sm">Javascript</span>
+                        <span class="bg-green-900/50 text-green-300 px-3 py-1 rounded-full text-sm">Socket.io</span>
+                        <span class="bg-green-900/50 text-green-300 px-3 py-1 rounded-full text-sm">Web Application Development</span>
+                        <span class="bg-green-900/50 text-green-300 px-3 py-1 rounded-full text-sm">Mobile Application Development</span>
+                    </div>
+                </div>
+
+                <!-- Experience 2 -->
+                <div class="bg-slate-800 rounded-lg p-6 md:p-8 transition-all hover:shadow-lg hover:shadow-emerald-900/20">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                        <h3 class="text-xl md:text-2xl font-bold text-emerald-400">Teaching Assistant</h3>
+                        <div class="mt-2 md:mt-0 px-4 py-1 bg-slate-700 rounded-full text-sm">2020 - 2025</div>
+                    </div>
+                    <div class="text-lg text-gray-300 mb-4">Southern Illinois University, University</div>
+                    <p class="text-gray-400 mb-6">
+                    Acted as Instructor for CS-200B Computer Concepts course, covering algorithms, AI, computer organization, and programming languages. Teaching Assistant for CS-436 Artificial Intelligence, CS-480 Computational Statistics-II, CS-221 Internet and Mobile Computing, CS-537 Advanced Expert Systems, CS-202 Introduction to Computer Science. Conducted labs for Web Technologies like HTML, CSS, Javascript, Bash scripting, Android development and  java programming. Organized presentations, online discussions, prepared Lecture Exams, HomeWorks, Labs and graded them.
+
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full text-sm">Teaching</span>
+                        <span class="bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full text-sm">Student Engagement</span>
+                        <span class="bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full text-sm">Collaborative Interactive Learning</span>
+                        <span class="bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full text-sm">Curriculum Design</span>
+                        <span class="bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full text-sm">Assessment & Evaluation</span>
+                    </div>
+                </div> 
+
+                <div class="bg-slate-800 rounded-lg p-6 md:p-8 transition-all hover:shadow-lg hover:shadow-emerald-900/20">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                        <h3 class="text-xl md:text-2xl font-bold text-emerald-400">Graduate Assistant</h3>
+                        <div class="mt-2 md:mt-0 px-4 py-1 bg-slate-700 rounded-full text-sm">2022 - 2022</div>
+                    </div>
+                    <div class="text-lg text-gray-300 mb-4">Southern Illinois University, University</div>
+                    <p class="text-gray-400 mb-6">
+                    Assisted in migration of cadence and Synopses tools from CentOS. Experimented the software compatibility in both Rocky Linux 9, Ubuntu 22.04, create and modified scripts for smooth integration to Ubuntu.
+
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full text-sm">Bash</span>
+                    </div>
+                </div>                
+
+                <!-- Experience 3 -->
+                <div class="bg-slate-800 rounded-lg p-6 md:p-8 transition-all hover:shadow-lg hover:shadow-emerald-900/20">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                        <h3 class="text-xl md:text-2xl font-bold text-emerald-400">Software Engineer</h3>
+                        <div class="mt-2 md:mt-0 px-4 py-1 bg-slate-700 rounded-full text-sm">2017 - 2020</div>
+                    </div>
+                    <div class="text-lg text-gray-300 mb-4">Enfusion</div>
+                    <p class="text-gray-400 mb-6">
+                        Involved in enhancing the front end and back end of the portfolio management system. Developed modules for different clients to proactively monitor accuracy of trades, positions, and cash balances across counterparties. Created bash scripts that collects the data from prime brokers, Custodians and Fund Administrators using Secure FTP protocols. Designed data transformations using Kettle for Data cleaning, Aggregation, Normalization of collected data. Developed Data Transfer Objects, JDBC code, Utility classes to represent the customized columns for different clients.Written SQL queries for creating schemas, tables, views, indexes for increasing the performance in MySQL. Parsed XML files using JAXB for creating the end of the day trade reports for different clients.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full text-sm">Java</span>
+                        <span class="bg-red-900/50 text-red-300 px-3 py-1 rounded-full text-sm">Object Oriented Programming</span>
+                        <span class="bg-red-900/50 text-red-300 px-3 py-1 rounded-full text-sm">Design Principles</span>
+                        <span class="bg-yellow-900/50 text-yellow-300 px-3 py-1 rounded-full text-sm">SQL</span>
+                        <span class="bg-yellow-900/50 text-yellow-300 px-3 py-1 rounded-full text-sm">MySQL</span>
+                        <span class="bg-green-900/50 text-green-300 px-3 py-1 rounded-full text-sm">Hibernate</span>
+                        <span class="bg-red-900/50 text-red-300 px-3 py-1 rounded-full text-sm">Bash</span>
+                        <span class="bg-red-900/50 text-red-300 px-3 py-1 rounded-full text-sm">XML</span>
+                        <span class="bg-red-900/50 text-red-300 px-3 py-1 rounded-full text-sm">JSON</span>
+                        <span class="bg-red-900/50 text-red-300 px-3 py-1 rounded-full text-sm">ETL</span>                       
+                    </div>
+                </div>
+                
+                <!-- Experience 4 -->
+                <div class="bg-slate-800 rounded-lg p-6 md:p-8 transition-all hover:shadow-lg hover:shadow-emerald-900/20">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                        <h3 class="text-xl md:text-2xl font-bold text-emerald-400">Assistant Systems Engineer</h3>
+                        <div class="mt-2 md:mt-0 px-4 py-1 bg-slate-700 rounded-full text-sm">2015 - 2016</div>
+                    </div>
+                    <div class="text-lg text-gray-300 mb-4">Tata Consultancy Services</div>
+                    <p class="text-gray-400 mb-6">
+                        Participated in designing Web Application based on Java/J2EE, JDBC, JSP using MVC architecture.Coded Data Access Objects, Service Controllers, Java helper and validation classes for the Application logic and utilities. Validated front end web pages using Java Script.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-green-900/50 text-green-300 px-3 py-1 rounded-full text-sm">Java</span>
+                        <span class="bg-red-900/50 text-red-300 px-3 py-1 rounded-full text-sm">Object Oriented Programming</span>
+                        <span class="bg-red-900/50 text-red-300 px-3 py-1 rounded-full text-sm">Design Principles</span>
+                        <span class="bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full text-sm">SQL</span>
+                        <span class="bg-yellow-900/50 text-yellow-300 px-3 py-1 rounded-full text-sm">Javascript</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Publications Section -->
+    <section id="publications" class="py-16 px-6 md:px-12 bg-slate-900">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-8 flex items-center">
+                <span class="text-emerald-400 mr-2">#</span> Publications
+                <div class="h-px bg-emerald-400 flex-grow ml-4"></div>
+            </h2>
+            
+            <div class="mb-8">
+                <p class="text-lg">
+                    My research has been published in top-tier conferences and journals in the fields of Social Netowrks, 
+                    and computer science. Below are some of my key publications.
+                </p>
+            </div>
+            
+            <div class="space-y-6">
+                <!-- Publication 2 -->
+                <div class="publication-card bg-slate-800 rounded-lg p-6 hover:shadow-lg hover:shadow-emerald-900/20 transition-all">
+                    <div class="flex flex-col md:flex-row justify-between">
+                        <div class="md:w-4/5">
+                            <h3 class="text-xl font-bold text-emerald-400">Assessing the impact of social network on the formation and evolution of collective opinion in integrated intelligent argumentation with social network</h3>
+                            <p class="text-gray-400 mt-2">
+                                <span class="font-semibold">Authors:</span> Bhargav Krishna Thota; Xiaoqing Frank Liu
+                            </p>
+                            <p class="text-gray-400">
+                                <span class="font-semibold">Journal:</span>  Social Network Analysis and Mining 15, 44 (2025)
+                            </p>
+                            <p class="mt-4 text-gray-300">
+    Massive online argumentation platforms can potentially capture the decision rationale and collective intelligence. Although significant advances have been made in their models, algorithms, and applications, the role of social networking in shaping the formation and evolution of opinions in cyber-argumentation remains under-explored. Social networking aspects like friends and follows relationships among users in cyber argumentation can reveal the patterns, shifts, and true relationships between the users in a discourse that influence the collective decision-making process. However, there are currently no systematic methods for assessing the impacts of social networks on the formation and evolution of collective opinions in cyber-argumentation. In this research, we propose a novel method to quantify the impact of social networking on cyber-argumentation. We investigate three types of impacts: directional impact, mutual impact, and social group impact. These different measures help quantify what the social group of a person thinks about his or her opinions and their impacts on their arguments. Using these impact measures, we developed an algorithm to detect the pseudo-supporters of an individual in an argumentation network. Furthermore, we also study the impact of the social network of users on significant shifts in collective opinion using the social group impact and the strength of the social connection of users in argumentation. The proposed methods and algorithm have been implemented within our intelligent cyber-argumentation system with social networking. Our empirical evaluations demonstrate the effectiveness of these quantification methods, detection of pseudo-supporters, and assessing the impact of social networks on collective opinion shifts in cyber-argumentation.
+                            </p>
+                            <div class="mt-4 flex space-x-4">
+                                <a href="https://doi.org/10.1007/s13278-025-01422-1" class="text-emerald-400 hover:text-emerald-300 flex items-center">
+                                    <i class="fas fa-external-link-alt mr-2"></i> DOI
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Publication 3 -->
+                <div class="publication-card bg-slate-800 rounded-lg p-6 hover:shadow-lg hover:shadow-emerald-900/20 transition-all">
+                    <div class="flex flex-col md:flex-row justify-between">
+                        <div class="md:w-4/5">
+                            <h3 class="text-xl font-bold text-emerald-400">Assessing Impact of Social Network on Formation of Opinions in Integrated Intelligent Argumentation with Social Network</h3>
+                            <p class="text-gray-400 mt-2">
+                                <span class="font-semibold">Authors:</span> Bhargav Krishna Thota; Xiaoqing Frank Liu
+                            </p>
+                            <p class="text-gray-400">
+                                <span class="font-semibold">Conference:</span> 2023 IEEE/ACM International Conference on Advances in Social Networks Analysis and Mining (ASONAM '23)
+                            </p>
+                            <p class="mt-4 text-gray-300">
+                                Cyber-Argumentation platforms facilitate large-scale online deliberations with appropriate structures and features to capture decision rationale and collective intelligence. Research advances have been made on its model, algorithms, and applications. Social networking has significant impacts on the formation and evolution of individual and collective opinions in cyber-argumentation. Social connections in social networking aspects like friends and follows relationships among users in cyber argumentation can reveal the patterns, shifts, and true relationships between the users in a discourse that influence collective decision-making process. However, the impacts of social networks on the formation and evolution of collective opinions in cyber-argumentation have not been studied systematically. There are currently no methods for assessing the impacts of social networks on the formation of collective opinions in cyber-argumentation. In this research, we propose a method to quantify the impact of social networking on cyber-argumentation. We investigate three types of impacts: directional impact, mutual impact, and social group impact. These represents the contribution of an individual user or group to the formation of a collective opinion for a specific issue in intelligent cyber argumentation system, a platform for cyber argumentation with social networking we have developed. These different measures help quantify what a person's social group thinks about his or her opinions and their impacts on their arguments. Finally, using these impact measures, we developed an algorithm to detect the pseudo-supporters of an individual in an argumentation network. The proposed methods and algorithm have been implemented based on our intelligent cyber-argumentation system with social networking. They have been studied empirically which shows that our quantification methods and algorithm enable the quantitative assessment of social connections and the detection of pseudo-supporters in cyber-argumentation.
+                            </p>
+                            <div class="mt-4 flex space-x-4">
+                                <a href="https://doi.org/10.1145/3625007.3627320" class="text-emerald-400 hover:text-emerald-300 flex items-center">
+                                    <i class="fas fa-external-link-alt mr-2"></i> DOI
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Publication 4 -->
+                <div class="publication-card bg-slate-800 rounded-lg p-6 hover:shadow-lg hover:shadow-emerald-900/20 transition-all">
+                    <div class="flex flex-col md:flex-row justify-between">
+                        <div class="md:w-4/5">
+                            <h3 class="text-xl font-bold text-emerald-400">Toward Mobile Application of Cyber Argumentation with Social Networking</h3>
+                            <p class="text-gray-400 mt-2">
+                                <span class="font-semibold">Authors:</span> Bhargav Krishna Thota; Xiaoqing Frank Liu; Md Mahfuzer Rahman
+                            </p>
+                            <p class="text-gray-400">
+                                <span class="font-semibold">Conference:</span> 2021 IEEE International Conference on Services Computing (SCC)
+                            </p>
+                            <p class="mt-4 text-gray-300">
+                                Argumentation is one of the basic activities people perform in our society. People often spend a lot of time arguing about social, cultural, economic, financial, political, and other issues. Existing cyber-argumentation platforms facilitate large-scale discussions among participants and play an important role in the analysis of collective opinions and collective decision-making. However, they do not provide social networking capabilities and are not designed to be used in social networking environments. With the advent of android and iOS mobile operating systems, people are gravitated towards the mobile applications than mobile websites. So, it is highly desirable to create a mobile application of cyber argumentation with social networking by integrating cyber argumentation and social networking. In this paper, we present a prototype of an innovative mobile application of cyber argumentation with social networking and introduced multiple analytical capabilities of argumentation with social networking. It will provide intelligent analytical argumentation tools, such as argumentation with social networking, diversity enhanced connection recommendation, opinion mining, group identification, analysis of group relationships, polarization analysis and so on.
+                            </p>
+                            <div class="mt-4 flex space-x-4">
+                                <a href="https://ieeexplore.ieee.org/document/9592515" class="text-emerald-400 hover:text-emerald-300 flex items-center">
+                                    <i class="fas fa-external-link-alt mr-2"></i> DOI
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Awards Section -->
+    <section id="awards" class="py-16 px-6 md:px-12 bg-slate-900">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-8 flex items-center">
+                <span class="text-emerald-400 mr-2">#</span> Awards & Recognition
+                <div class="h-px bg-emerald-400 flex-grow ml-4"></div>
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Academic Awards -->
+                <div class="bg-slate-800 rounded-lg p-6 md:p-8">
+                    <h3 class="text-xl font-bold mb-6 text-emerald-400 flex items-center">
+                        <i class="fas fa-award mr-3"></i> Academic Awards
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0 h-12 w-12 bg-emerald-900/30 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-medal text-emerald-400 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg">Dissertation Research Award</h4>
+                                <p class="text-gray-400">Southern Illinois University, Carbondale</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex">
+                            <div class="flex-shrink-0 h-12 w-12 bg-purple-900/30 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-trophy text-purple-400 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg">Best Studnet Paper Award</h4>
+                                <p class="text-gray-400">2023 IEEE/ACM International Conference on Advances in Social Networks Analysis and Mining (ASONAM '23)</p>
+                                <p class="text-gray-300 mt-2">
+                                    Awarded for the paper "Assessing Impact of Social Network on Formation of Opinions in Integrated Intelligent Argumentation with Social Network"
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>    
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-16 px-6 md:px-12 bg-slate-900">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-8 flex items-center">
+                <span class="text-emerald-400 mr-2">#</span> Projects
+                <div class="h-px bg-emerald-400 flex-grow ml-4"></div>
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Project 1 -->
+                <div class="project-card bg-slate-800 rounded-lg overflow-hidden">
+                    <div class="h-48 bg-gradient-to-r from-blue-500 to-emerald-500 flex items-center justify-center">
+                        <svg class="w-24 h-24 text-white" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2 text-emerald-400">Assessing the impact of social networks in cyber-argumentation</h3>
+                        <p class="text-gray-400 mb-4">
+                            
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full text-xs">Python</span>
+                            <span class="bg-yellow-900/50 text-yellow-300 px-3 py-1 rounded-full text-xs">Java</span>
+                            <span class="bg-yellow-900/50 text-yellow-300 px-3 py-1 rounded-full text-xs">Neo4j</span>
+                            <span class="bg-yellow-900/50 text-yellow-300 px-3 py-1 rounded-full text-xs">Socket.io</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project 2 -->
+                <div class="project-card bg-slate-800 rounded-lg overflow-hidden">
+                    <div class="h-48 bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                        <svg class="w-24 h-24 text-white" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-2V9h-2V7h4v10z"/>
+                        </svg>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2 text-emerald-400">XArgue</h3>
+                        <p class="text-gray-400 mb-4">
+                            XArgue is an AI powered, Analytics based, Issue driven, Structured Argumentation platform with Social Networking. Its a cross-platform mobile application for iOS and Android platforms.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full text-xs">Javascript</span>
+                            <span class="bg-green-900/50 text-green-300 px-3 py-1 rounded-full text-xs">Java</span>
+                            <span class="bg-yellow-900/50 text-yellow-300 px-3 py-1 rounded-full text-xs">Neo4j</span>
+                            <span class="bg-yellow-900/50 text-yellow-300 px-3 py-1 rounded-full text-xs">Socket.io</span>
+                            <span class="bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full text-xs">Web Technologies</span>
+                            <span class="bg-yellow-900/50 text-yellow-300 px-3 py-1 rounded-full text-xs">Apache Cordova</span>
+                            <span class="bg-yellow-900/50 text-yellow-300 px-3 py-1 rounded-full text-xs">Android Development</span>
+                            <span class="bg-yellow-900/50 text-yellow-300 px-3 py-1 rounded-full text-xs">iOS Development</span>
+                        </div>
+                    </div>
+                </div>
+                
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="py-16 px-6 md:px-12">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-8 flex items-center">
+                <span class="text-emerald-400 mr-2">#</span> Skills
+                <div class="h-px bg-emerald-400 flex-grow ml-4"></div>
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Languages -->
+                <div class="bg-slate-800 rounded-lg p-6">
+                    <h3 class="text-xl font-bold mb-6 text-emerald-400 flex items-center">
+                        <i class="fas fa-code mr-3"></i> Languages
+                    </h3>
+                    <div class="flex flex-wrap gap-3">
+                        <div class="skill-pill bg-slate-700 px-4 py-2 rounded-lg flex items-center">
+                            <div class="w-3 h-3 bg-yellow-400 rounded-full mr-2"></div>
+                            <span>Java</span>
+                        </div>
+                        <div class="skill-pill bg-slate-700 px-4 py-2 rounded-lg flex items-center">
+                            <div class="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
+                            <span>Python</span>
+                        </div>
+                        <div class="skill-pill bg-slate-700 px-4 py-2 rounded-lg flex items-center">
+                            <div class="w-3 h-3 bg-green-400 rounded-full mr-2"></div>
+                            <span>Javascript</span>
+                        </div>
+                        <div class="skill-pill bg-slate-700 px-4 py-2 rounded-lg flex items-center">
+                            <div class="w-3 h-3 bg-red-400 rounded-full mr-2"></div>
+                            <span>SQL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Research -->
+                <div class="bg-slate-800 rounded-lg p-6">
+                    <h3 class="text-xl font-bold mb-6 text-emerald-400 flex items-center">
+                        <i class="fas fa-layer-group mr-3"></i> Research
+                    </h3>
+                    <div class="flex flex-wrap gap-3">
+                        <div class="skill-pill bg-slate-700 px-4 py-2 rounded-lg flex items-center">
+                            <div class="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
+                            <span>Qualitative and Quantitave Analysis</span>
+                        </div>
+                        <div class="skill-pill bg-slate-700 px-4 py-2 rounded-lg flex items-center">
+                            <div class="w-3 h-3 bg-green-400 rounded-full mr-2"></div>
+                            <span>Algorithm Development</span>
+                        </div>
+                        <div class="skill-pill bg-slate-700 px-4 py-2 rounded-lg flex items-center">
+                            <div class="w-3 h-3 bg-emerald-400 rounded-full mr-2"></div>
+                            <span>Sensitivity Analysis</span>
+                        </div>
+                        <div class="skill-pill bg-slate-700 px-4 py-2 rounded-lg flex items-center">
+                            <div class="w-3 h-3 bg-red-400 rounded-full mr-2"></div>
+                            <span>Experimental Design</span>
+                        </div>                        
+                        <div class="skill-pill bg-slate-700 px-4 py-2 rounded-lg flex items-center">
+                            <div class="w-3 h-3 bg-red-400 rounded-full mr-2"></div>
+                            <span>Academic Writing</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tools & Technologies -->
+                <div class="bg-slate-800 rounded-lg p-6">
+                    <h3 class="text-xl font-bold mb-6 text-emerald-400 flex items-center">
+                        <i class="fas fa-tools mr-3"></i> Tools & Tech
+                    </h3>
+                    <div class="flex flex-wrap gap-3">
+                        <div class="skill-pill bg-slate-700 px-4 py-2 rounded-lg flex items-center">
+                            <div class="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
+                            <span>Eclipse</span>
+                        </div>
+                        <div class="skill-pill bg-slate-700 px-4 py-2 rounded-lg flex items-center">
+                            <div class="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
+                            <span>Visual Studio</span>
+                        </div>                        
+                        <div class="skill-pill bg-slate-700 px-4 py-2 rounded-lg flex items-center">
+                            <div class="w-3 h-3 bg-red-400 rounded-full mr-2"></div>
+                            <span>Git</span>
+                        </div>
+                        <div class="skill-pill bg-slate-700 px-4 py-2 rounded-lg flex items-center">
+                            <div class="w-3 h-3 bg-pink-400 rounded-full mr-2"></div>
+                            <span>GraphQL</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skill Bars -->
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-6 text-emerald-400">Programming Proficiency</h3>
+
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-1">
+                            <span>Java</span>
+                            <span>90%</span>
+                        </div>
+                        <div class="h-2 bg-slate-700 rounded-full">
+                            <div class="h-full bg-emerald-400 rounded-full" style="width: 95%"></div>
+                        </div>
+                    </div>                    
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-1">
+                            <span>JavaScript</span>
+                            <span>90%</span>
+                        </div>
+                        <div class="h-2 bg-slate-700 rounded-full">
+                            <div class="h-full bg-emerald-400 rounded-full" style="width: 95%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-1">
+                            <span>Python</span>
+                            <span>80%</span>
+                        </div>
+                        <div class="h-2 bg-slate-700 rounded-full">
+                            <div class="h-full bg-emerald-400 rounded-full" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-1">
+                            <span>SQL</span>
+                            <span>90%</span>
+                        </div>
+                        <div class="h-2 bg-slate-700 rounded-full">
+                            <div class="h-full bg-emerald-400 rounded-full" style="width: 80%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold mb-6 text-emerald-400">Areas of Expertise</h3>
+                    
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-1">
+                            <span>Research</span>
+                            <span>90%</span>
+                        </div>
+                        <div class="h-2 bg-slate-700 rounded-full">
+                            <div class="h-full bg-emerald-400 rounded-full" style="width: 95%"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-1">
+                            <span>Object Oriented Programming</span>
+                            <span>90%</span>
+                        </div>
+                        <div class="h-2 bg-slate-700 rounded-full">
+                            <div class="h-full bg-emerald-400 rounded-full" style="width: 95%"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-1">
+                            <span>Design Principles</span>
+                            <span>90%</span>
+                        </div>
+                        <div class="h-2 bg-slate-700 rounded-full">
+                            <div class="h-full bg-emerald-400 rounded-full" style="width: 95%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-1">
+                            <span>Machine Learning</span>
+                            <span>90%</span>
+                        </div>
+                        <div class="h-2 bg-slate-700 rounded-full">
+                            <div class="h-full bg-emerald-400 rounded-full" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-1">
+                            <span>Full-Stack Development</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="h-2 bg-slate-700 rounded-full">
+                            <div class="h-full bg-emerald-400 rounded-full" style="width: 90%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 px-6 md:px-12 bg-slate-900">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-8 flex items-center">
+                <span class="text-emerald-400 mr-2">#</span> Contact
+                <div class="h-px bg-emerald-400 flex-grow ml-4"></div>
+            </h2>
+            
+            <div class="flex flex-col md:flex-row gap-12">
+                <div class="md:w-1/2">
+                    <div class="space-y-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-envelope text-emerald-400"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400">Email</div>
+                                <div class="text-lg">bhargavkrishna.thota@siu.edu</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-map-marker-alt text-emerald-400"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400">Location</div>
+                                <div class="text-lg">Carbondale, IL</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 flex space-x-4">
+                        <a href="https://github.com/bthot2" class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center hover:bg-slate-700 transition-colors">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/bhargav-krishna-thota" class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center hover:bg-slate-700 transition-colors">
+                            <i class="fab fa-linkedin-in text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-6 md:px-12 bg-slate-800">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="text-emerald-400 code-font font-bold text-xl">
+                        <span>Bhargav Krishna Thota</span>
+                    </div>
+                    <div class="text-gray-400 mt-2">Software Developer & Researcher</div>
+                </div>
+                
+                <div class="flex flex-col items-center md:items-end">
+                    <div class="text-gray-400 mb-2">© 2025 All Rights Reserved</div>
+                    <div class="text-sm">
+                        Built with <span class="text-emerald-400">❤</span> and a lot of <span class="text-emerald-400">{ code }</span>
+                    </div>
+                    <div class="canva-credit mt-3 bg-slate-700 px-4 py-1 rounded-full text-xs flex items-center">
+                        <span class="mr-1">Powered by</span>
+                        <span class="text-emerald-400 font-semibold">Canva AI</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Terminal typing animation
+        const logoText = "Bhargav Krishna Thota";
+        const terminalCommands = [
+            "npm install future-skills",
+            "git commit -m 'Solving complex problems'",
+            "docker run innovation",
+            "python optimize_solutions.py"
+        ];
+        
+        let logoIndex = 0;
+        let commandIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        
+        function typeLogo() {
+            const logoElement = document.getElementById('logo-text');
+            if (logoIndex < logoText.length) {
+                logoElement.textContent += logoText.charAt(logoIndex);
+                logoIndex++;
+                setTimeout(typeLogo, 100);
+            }
+        }
+        
+        function typeTerminal() {
+            const terminalElement = document.getElementById('terminal-cursor');
+            const currentCommand = terminalCommands[commandIndex];
+            
+            if (isDeleting) {
+                terminalElement.textContent = currentCommand.substring(0, charIndex - 1);
+                charIndex--;
+                
+                if (charIndex === 0) {
+                    isDeleting = false;
+                    commandIndex = (commandIndex + 1) % terminalCommands.length;
+                    setTimeout(typeTerminal, 500);
+                } else {
+                    setTimeout(typeTerminal, 50);
+                }
+            } else {
+                terminalElement.textContent = currentCommand.substring(0, charIndex + 1);
+                charIndex++;
+                
+                if (charIndex === currentCommand.length) {
+                    isDeleting = true;
+                    setTimeout(typeTerminal, 1500);
+                } else {
+                    setTimeout(typeTerminal, 100);
+                }
+            }
+        }
+        
+        // Start typing animations
+        window.addEventListener('DOMContentLoaded', () => {
+            typeLogo();
+            setTimeout(typeTerminal, 1000);
+            
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Theme toggle
+            const themeToggle = document.getElementById('theme-toggle');
+            const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+            const body = document.body;
+            
+            function toggleTheme() {
+                body.classList.toggle('light-mode');
+                
+                const isDarkMode = !body.classList.contains('light-mode');
+                const themeIcon = isDarkMode ? 
+                    '<i class="fas fa-moon text-yellow-300"></i>' : 
+                    '<i class="fas fa-sun text-yellow-500"></i>';
+                
+                themeToggle.innerHTML = themeIcon;
+                mobileThemeToggle.innerHTML = `${themeIcon} Toggle Theme`;
+            }
+            
+            themeToggle.addEventListener('click', toggleTheme);
+            mobileThemeToggle.addEventListener('click', toggleTheme);
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Close mobile menu if open
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+            
+            // Contact form submission
+            const contactForm = document.getElementById('contact-form');
+            
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const subject = document.getElementById('subject').value;
+                const message = document.getElementById('message').value;
+                
+                // In a real implementation, you would send this data to a server
+                console.log('Form submitted:', { name, email, subject, message });
+                
+                // Show success message (in a real implementation)
+                alert('Thank you for your message! I will get back to you soon.');
+                
+                // Reset form
+                contactForm.reset();
+            });
+            
+            // Update active nav link on scroll
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            function highlightNavLink() {
+                const scrollPosition = window.scrollY + 100;
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.offsetHeight;
+                    const sectionId = section.getAttribute('id');
+                    
+                    if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${sectionId}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }
+            
+            window.addEventListener('scroll', highlightNavLink);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'964730e452b4aff8',t:'MTc1MzM5OTY3NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
